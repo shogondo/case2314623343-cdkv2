@@ -1,16 +1,38 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as pipelines from 'aws-cdk-lib/pipelines';
+import { MyStage } from './mystage';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class ProjStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const connection = pipelines.CodePipelineSource.connection(
+      'shogondo/case2314623343-cdkv2',
+      'main',
+      {
+        connectionArn: 'arn:aws:codestar-connections:ap-northeast-1:393007915094:connection/a480f9e0-2bdb-4bad-8428-86ff691d0af9'
+      }
+    )
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'ProjQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+      pipelineName: 'CdkPipeline',
+      crossAccountKeys: true,
+      synth: new pipelines.CodeBuildStep('SynthStep', {
+        input: connection,
+        installCommands: [
+          'npm install -g aws-cdk'
+        ],
+        commands: [
+          'npm ci',
+          'npm run build',
+          'npx cdk synth --debug --verbose --trace'
+        ]
+      })
+    });
+
+    const stage = new MyStage(this, 'MyStage', {});
+    pipeline.addStage(stage)
   }
 }
