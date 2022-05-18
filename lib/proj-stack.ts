@@ -17,7 +17,7 @@ export class ProjStack extends Stack {
     )
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
-      pipelineName: 'CdkPipeline',
+      pipelineName: 'CdkPipelineV2',
       crossAccountKeys: true,
       synth: new pipelines.CodeBuildStep('SynthStep', {
         input: connection,
@@ -25,6 +25,7 @@ export class ProjStack extends Stack {
           'npm install -g aws-cdk'
         ],
         commands: [
+          'echo v2',
           'npm ci',
           'npm run build',
           'npx cdk synth --debug --verbose --trace'
@@ -32,7 +33,7 @@ export class ProjStack extends Stack {
       })
     });
 
-    const stage = new MyStage(this, 'MyStage', {});
+    const stage = new MyStage(this, 'MyStageV2', {});
     pipeline.addStage(stage)
   }
 }
