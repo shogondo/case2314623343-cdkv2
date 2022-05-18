@@ -33,7 +33,12 @@ export class ProjStack extends Stack {
       })
     });
 
-    const stage = new MyStage(this, 'MyStageV2', {});
+    const stage = new MyStage(this, 'MyStageV2', {
+      env: {
+        account: '393007915094',
+        region: 'ap-northeast-1'
+      }
+    });
     pipeline.addStage(stage)
   }
 }
