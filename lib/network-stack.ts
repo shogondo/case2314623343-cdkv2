@@ -7,6 +7,7 @@ export class NetworkStack extends Stack {
       super(scope, id, props);
 
       const vpc = new ec2.Vpc(this, "vpc", {
+        cidr: '172.1.1.0/24',
         natGateways: 1,
         natGatewaySubnets: {subnetGroupName: 'public'},
         subnetConfiguration: [
